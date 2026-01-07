@@ -39,7 +39,7 @@ phases:
           sonar-scanner \
             -Dsonar.projectKey=Swiggy \
             -Dsonar.sources=. \
-            -Dsonar.host.url=http://65.1.1.149:9000 \
+            -Dsonar.host.url=http://13.222.157.19:9000 \
             -Dsonar.login=$SONAR_TOKEN
 
   build:
