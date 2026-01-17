@@ -12,67 +12,95 @@ phases:
     runtime-versions:
       python: 3.11
       java: corretto17
+    commands:
+      - echo "Installing base dependencies"
 
   pre_build:
     commands:
-      - echo "Installing dependencies..."
-      - echo "Performing Trivy file scan before building the image..."
+      - echo "========== PRE-BUILD =========="
+      - echo "Running Trivy filesystem scan"
 
       - wget https://github.com/aquasecurity/trivy/releases/download/v0.19.2/trivy_0.19.2_Linux-64bit.tar.gz
-      - tar zxvf trivy_0.19.2_Linux-64bit.tar.gz
-      - export PATH=$PATH:$PWD
-      - trivy filesystem --exit-code 0 --no-progress . >> trivyfilescan.txt
+      - tar -xzf trivy_0.19.2_Linux-64bit.tar.gz
+      - chmod +x trivy
+      - mv trivy /usr/local/bin/
 
-      - echo "Downloading and installing OWASP Dependency-Check..."
+      - trivy filesystem --exit-code 0 --no-progress . > trivy-filesystem.txt
+
+      - echo "Downloading OWASP Dependency-Check"
       - wget https://github.com/jeremylong/DependencyCheck/releases/download/v7.0.2/dependency-check-7.0.2-release.zip
       - unzip dependency-check-7.0.2-release.zip
 
+      - echo "Installing Sonar Scanner"
       - export SONAR_SCANNER_VERSION=4.7.0.2747
-      - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-      - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
-      - unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
-      - export PATH=$SONAR_SCANNER_HOME/bin:$PATH
-      - export SONAR_SCANNER_OPTS="-server"
+      - curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip
+      - unzip sonar-scanner.zip
+      - export PATH=$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux/bin:$PATH
 
-      - echo "Running SonarQube analysis..."
+      - echo "Running SonarQube Analysis"
       - |
-          sonar-scanner \
-            -Dsonar.projectKey=Swiggy \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=http://13.222.157.19:9000 \
-            -Dsonar.login=$SONAR_TOKEN
+        sonar-scanner \
+          -Dsonar.projectKey=Swiggy \
+          -Dsonar.sources=. \
+          -Dsonar.host.url=http://13.222.157.19:9000 \
+          -Dsonar.login=$SONAR_TOKEN
 
   build:
     commands:
-      - echo "Building Docker image..."
+      - echo "========== BUILD =========="
+      - echo "Logging in to Docker registry"
 
-      - |
-          echo "$DOCKER_REGISTRY_PASSWORD" | docker login \
-            -u "$DOCKER_REGISTRY_USERNAME" \
-            --password-stdin "$DOCKER_REGISTRY_URL"
+      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login \
+          -u "$DOCKER_REGISTRY_USERNAME" \
+          --password-stdin "$DOCKER_REGISTRY_URL"
 
+      - echo "Building Docker image"
       - docker build -t "$DOCKER_REGISTRY_URL/$DOCKER_REGISTRY_USERNAME/swiggy:latest" .
+
+      - echo "Pushing Docker image"
       - docker push "$DOCKER_REGISTRY_URL/$DOCKER_REGISTRY_USERNAME/swiggy:latest"
 
   post_build:
     commands:
-      - echo "Performing Trivy image scan after building the image..."
-      - trivy image "$DOCKER_REGISTRY_URL/$DOCKER_REGISTRY_USERNAME/swiggy:latest" >> trivyimage.txt
+      - echo "========== POST-BUILD =========="
+      - echo "Running Trivy image scan"
 
-      - echo "Running OWASP Dependency-Check scan..."
+      - trivy image "$DOCKER_REGISTRY_URL/$DOCKER_REGISTRY_USERNAME/swiggy:latest" > trivy-image.txt || true
+
+      - echo "Running OWASP Dependency-Check"
       - cd dependency-check/bin
-      - ./dependency-check.sh --scan . --format ALL || true
+      - ./dependency-check.sh --scan /codebuild/output/src* --format ALL || true
+      - cd -
 
-      - echo "Build completed successfully!"
+      - echo "Creating ECS task definition artifact (taskdef.json)"
 
       - |
-          aws ses send-email \
-            --from "devsaini1441@gmail.com" \
-            --to "devsaini1441@gmail.com" \
-            --subject "CodeBuild Status: $CODEBUILD_BUILD_ID" \
-            --text "Build status: $CODEBUILD_BUILD_STATUS" \
-            --region "us-east-1" || true
+        cat <<EOF > taskdef.json
+        {
+          "family": "swiggy-task",
+          "networkMode": "awsvpc",
+          "requiresCompatibilities": ["EC2"],
+          "cpu": "256",
+          "memory": "512",
+          "containerDefinitions": [
+            {
+              "name": "Swiggy",
+              "image": "$DOCKER_REGISTRY_URL/$DOCKER_REGISTRY_USERNAME/swiggy:latest",
+              "essential": true,
+              "portMappings": [
+                {
+                  "containerPort": 80,
+                  "protocol": "tcp"
+                }
+              ]
+            }
+          ]
+        }
+        EOF
+
+      - echo "Build completed successfully"
 
 artifacts:
   files:
     - appspec.yaml
+    - taskdef.json
