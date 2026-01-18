@@ -50,3 +50,58 @@ D. Continuous monitoring ensures that if any issues arise during deployment, tra
 
 
 This approach enables secure, automated, and zero-downtime deployments, making it an ideal strategy for modern cloud-native applications following DevSecOps best practices.
+
+## Step 1: Creating a SonarQube Server (Code Quality & Security Analysis)
+To perform Static Code Analysis in our DevSecOps pipeline, we first need to set up a SonarQube Server. SonarQube helps in identifying code smells, bugs, and security vulnerabilities before deploying the application.
+
+i. Open the AWS Management Console, navigate to EC2 → Key Pairs, and click Create key pair.
+ii. Enter a suitable name for the key pair, choose the key format as .pem, and click Create.
+The .pem file will be downloaded to your local machine.
+
+Next, go to the EC2 Dashboard and click on Launch Instance.
+Provide a meaningful name for the instance (for example, sonar-server)
+Select Ubuntu as the Amazon Machine Image (AMI) and choose t2.medium as the instance type.
+In the Key Pair section, select the key pair that you created earlier.
+<img width="940" height="444" alt="image" src="https://github.com/user-attachments/assets/fefb3e73-5f41-4cc1-a7f2-19bf6c42bd2d" />
+
+Leave the remaining settings as default and click Launch Instance.
+Once the instance reaches the Running state, select it and click Connect.
+<img width="940" height="427" alt="image" src="https://github.com/user-attachments/assets/e2594011-596e-4d65-bdec-cf83fd814468" />
+
+You can connect using EC2 Instance Connect or via SSH using the downloaded .pem file.
+After connecting to the instance, install Docker, which will be used to run SonarQube.
+
+```go
+# Installing Docker 
+sudo apt update
+sudo apt install docker.io -y
+sudo usermod -aG docker ubuntu
+sudo systemctl restart docker
+sudo chmod 777 /var/run/docker.sock
+```
+
+Start SonarQube as a Docker container using the following command:
+
+```go
+# Run SonarQube container
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+```
+Make sure that port 9000 is allowed in the security group attached to the EC2 instance.
+<img width="940" height="449" alt="image" src="https://github.com/user-attachments/assets/7ebf05c3-6a73-4282-8739-ed0166c42c43" />
+
+Finally, access the SonarQube dashboard using the following URL:
+
+```go
+http://<public_ip>:9000
+```
+<img width="940" height="452" alt="image" src="https://github.com/user-attachments/assets/e36cfc3f-a5dd-4a27-b08b-6cdd539a912a" />
+
+Default Credentials:
+
+Username: admin
+
+Password: admin
+
+
+
+
