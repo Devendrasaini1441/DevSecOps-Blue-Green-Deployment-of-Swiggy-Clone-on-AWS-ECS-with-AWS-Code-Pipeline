@@ -303,10 +303,44 @@ Trivy image scan completed
 <img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/b59295fb-3ab6-41ab-b209-e0de2449fcef" />
 <img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/75e81536-d993-4ebf-9830-1248b465d699" />
 <img width="940" height="450" alt="image" src="https://github.com/user-attachments/assets/51e38a01-d7c2-4b8d-baff-2f96b1583e6f" />
+### ECS Service Creation Using Cloud Shell
+we are creating ECS Service using cloud shell because in AWS UI don't have any option to edit deployment controler from ECS to CodeDeploy.
+```go
+aws ecs create-service \
+  --cluster Swiggy_Cluster \
+  --service-name swiggy-service \
+  --task-definition swiggy-task \
+  --desired-count 1 \
+  --launch-type EC2 \
+  --deployment-controller type=CODE_DEPLOY \
+  --load-balancers \
+    targetGroupArn=arn:aws:elasticloadbalancing:us-east-1:404438824207:targetgroup/swiggy-blue-tg/1813a3c76df5425f,containerName=Swiggy,containerPort=80 \
+  --network-configuration "awsvpcConfiguration={subnets=[subnet-09dfa7196d755daf9,subnet-07ea0039a663d27a8,subnet-0c1fee551f3421c57],securityGroups=[sg-09296e9dd89916dad],assignPublicIp=DISABLED}"
+
+```
+<img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/49feab9e-3872-429b-b8aa-6d64314530a0" />
+<img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/0eb322e0-a6ac-486e-8fab-e380b2d44cf6" />
+<img width="940" height="456" alt="image" src="https://github.com/user-attachments/assets/a0bcadba-3b17-4e82-8c46-aa578fd56d00" />
+
 <img width="940" height="445" alt="image" src="https://github.com/user-attachments/assets/effc5c4d-ac9a-4c82-a6f2-01ca3488ce11" />
 
 <img width="940" height="453" alt="image" src="https://github.com/user-attachments/assets/0ec8844d-6f7f-4173-bbc6-2ea52f5585c0" />
 <img width="940" height="453" alt="image" src="https://github.com/user-attachments/assets/88c76acc-b695-4516-802b-1a95f4dfb926" />
+<img width="940" height="450" alt="image" src="https://github.com/user-attachments/assets/29f1e4e5-6faf-40b0-93b4-d362ed64e780" />
+<img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/44196edc-392b-4470-90e4-85f7e4eaff5e" />
+<img width="940" height="453" alt="image" src="https://github.com/user-attachments/assets/6a2bf179-9812-4f11-9c26-b291c99021c5" />
+<img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/3ded13a0-f09e-429c-8c3b-372146d57cbe" />
+<img width="940" height="433" alt="image" src="https://github.com/user-attachments/assets/27ba0eac-48d9-4f09-a68b-03a07a27ffbc" />
+<img width="940" height="452" alt="image" src="https://github.com/user-attachments/assets/8023d469-8847-495f-bd0b-3820acb290bf" />
+<img width="940" height="416" alt="image" src="https://github.com/user-attachments/assets/42f7029a-0300-4b56-a63a-0c03a41c46b2" />
+<img width="940" height="454" alt="image" src="https://github.com/user-attachments/assets/2259e078-bb5c-4802-9875-c79f6e04662e" />
+<img width="940" height="600" alt="image" src="https://github.com/user-attachments/assets/487b1f1a-e790-4f21-ba46-9c4d4ea5e53d" />
+<img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/4ec6b2a6-ba3c-4e7b-ab34-9518107ca24a" />
+<img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/bd57d24b-2a72-4b55-b54d-1e50f192e492" />
+<img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/0320038e-9c4f-432f-8f4e-c26e28b51c9f" />
+<img width="940" height="449" alt="image" src="https://github.com/user-attachments/assets/7ed8d14c-274d-4994-bf89-4600b242e71e" />
+<img width="940" height="478" alt="image" src="https://github.com/user-attachments/assets/04d58498-3889-4352-8a16-7e826ffb4b66" />
+
 
 
 
