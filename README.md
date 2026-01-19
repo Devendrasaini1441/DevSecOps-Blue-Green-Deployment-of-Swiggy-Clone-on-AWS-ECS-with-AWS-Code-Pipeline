@@ -217,6 +217,82 @@ Parameter name: /cicd/docker-registry/url
 Value: docker.io
 ```
 
+## Step-3: Create an AWS CodeBuild Project
+
+In this step, we configure AWS CodeBuild to build the application, run security scans, and generate artifacts required for deployment.
+
+Open the AWS Management Console, navigate to CodeBuild, and click on Create build project.
+<img width="940" height="450" alt="image" src="https://github.com/user-attachments/assets/107bb28d-d61d-4b74-9aa6-63e351836493" />
+
+
+Enter a suitable Project name for the build project.
+<img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/b55df0fe-951d-4a33-851e-34b0612c7ade" />
+
+
+In the Source section, select GitHub as the source provider.
+<img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/65d4e8ae-f902-4654-a11a-ed5581478158" />
+
+
+Choose Connect using OAuth to authenticate with GitHub.
+<img width="1007" height="439" alt="image" src="https://github.com/user-attachments/assets/8f781a4c-7553-4c17-b876-63dfd8594119" />
+
+
+Complete the GitHub authorization process by granting the required permissions and logging in.
+
+From the list of repositories, select the GitHub repository that contains your application source code.
+
+In the Environment section, keep all settings as default.
+<img width="999" height="438" alt="image" src="https://github.com/user-attachments/assets/108dafa4-79e0-4151-88ba-1138d3d78588" />
+
+
+In the Buildspec section:
+
+Select Use a buildspec file
+<img width="1002" height="440" alt="image" src="https://github.com/user-attachments/assets/be1108e1-738a-42cb-b9e6-fb63160a6d85" />
+
+
+Enter the file name as buildspec.yaml
+
+In the Artifacts section, choose an existing S3 bucket to store the build artifacts.
+
+Click on Update project to save the configuration.
+<img width="940" height="452" alt="image" src="https://github.com/user-attachments/assets/eba67bc4-b27c-4922-ae54-064685004c69" />
+
+
+Navigate to IAM → Roles and open the IAM role automatically created by CodeBuild for this project.
+
+Attach the following permissions to the role:
+
+AmazonSSMFullAccess (to access secrets from Parameter Store)
+
+AmazonS3FullAccess (to upload build artifacts)
+<img width="940" height="449" alt="image" src="https://github.com/user-attachments/assets/235293c1-61fc-4335-91bc-b31dd77f567d" />
+
+
+Return to the CodeBuild console and click Start build.
+
+Once the build completes successfully, you should observe the following results in the logs and reports:
+<img width="940" height="451" alt="image" src="https://github.com/user-attachments/assets/61e54057-59a5-4f6f-ae01-143d94bd3dfe" />
+
+
+SonarQube analysis executed successfully
+<img width="940" height="452" alt="image" src="https://github.com/user-attachments/assets/7d4d6266-2cdb-48c6-b0ad-cacd37d83379" />
+
+<img width="940" height="454" alt="image" src="https://github.com/user-attachments/assets/207de374-ad50-4f34-a73a-bdadaff86f61" />
+
+
+OWASP Dependency-Check reports generated
+
+Trivy filesystem scan completed
+<img width="940" height="450" alt="image" src="https://github.com/user-attachments/assets/1cc38e02-a482-42cf-9532-86f6b32b82cf" />
+
+
+Trivy image scan completed
+
+
+
+
+
 
 
 
