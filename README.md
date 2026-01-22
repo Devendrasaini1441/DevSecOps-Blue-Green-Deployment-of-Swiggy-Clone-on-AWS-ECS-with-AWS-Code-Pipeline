@@ -320,6 +320,7 @@ Review the configuration and click Create cluster.
 <img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/d27ec344-5796-4acd-819a-0a4a32a9ec21" />
 ### Create an ECS Task Definition
 After creating the cluster, the next step is to define how the container should run using a task definition.
+
 In the ECS console, go to Task Definitions.
 
 <img width="940" height="445" alt="image" src="https://github.com/user-attachments/assets/a84e3687-feae-4244-970c-5776dd4c3f97" />
@@ -342,10 +343,86 @@ In the Monitoring section, keep the recommended settings enabled.
 <img width="940" height="449" alt="image" src="https://github.com/user-attachments/assets/39ba75a7-da4b-43e7-8237-cd1b27267f0a" />
 Review the configuration and click Create task definition.
 <img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/fe67ad68-644b-46d4-a60b-7150e8057875" />
-<img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/9221e529-d3f9-498c-9891-baf72366e674" />
+### Load Balancer Creation
+Open the AWS Management Console and navigate to EC2.
+
+From the left menu, click on Load Balancers, then select Create load balancer.
+
+Choose Application Load Balancer and click Create.
 <img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/31a4097f-a009-4cf8-a66d-81cef17bc8a2" />
+Enter a name for the load balancer.
+
+Under Network mapping, select:
+
+The VPC
+
+The subnets where the load balancer should run
+
+In the Listeners and routing section, 
+
+click on Create target group.
 <img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/b59295fb-3ab6-41ab-b209-e0de2449fcef" />
+### Create Target Groups (Blue & Green)
+
+Target groups are used by the Application Load Balancer to route traffic during Blue-Green deployments. We will create two target groups:
+
+Blue target group → current live version
+
+Green target group → new version
+#### Step-1: Open Target Groups
+
+Go to the AWS Management Console.
+
+Navigate to EC2.
+
+From the left menu, click on Target Groups.
+
+Click Create target group.
+
+#### Step-2: Configure Target Group (Blue)
+
+Under Choose a target type, select Instances.
+
+Give a Target group name
+Example: swiggy-blue-tg
+
+Select the VPC where your ECS cluster is running.
+
+Set Protocol as HTTP and Port as 80.
+
+Step-3: Health Check Configuration
+
+Keep the Health check protocol as HTTP.
+
+Set the Health check path as /.
+
+Leave other health check settings as default.
+
+Click Next.
+
+#### Step-4: Register Targets
+
+Select the EC2 instances that belong to your ECS cluster.
+
+Click Include as pending below.
+
+Click Create target group.
+
+#### Step-5: Create Green Target Group
+
+Repeat the same steps to create another target group:
+
+Target group name: swiggy-green-tg
+
+Same VPC, protocol, port, and health check settings
 <img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/75e81536-d993-4ebf-9830-1248b465d699" />
+#### Finalize Load Balancer
+
+Go back to the Load Balancer creation page.
+
+Select the target group you just created.
+
+Click on Create load balancer to complete the setup.
 <img width="940" height="450" alt="image" src="https://github.com/user-attachments/assets/51e38a01-d7c2-4b8d-baff-2f96b1583e6f" />
 ### ECS Service Creation Using Cloud Shell
 we are creating ECS Service using cloud shell because in AWS UI don't have any option to edit deployment controler from ECS to CodeDeploy.
