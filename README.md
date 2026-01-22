@@ -314,13 +314,15 @@ The subnets in which the EC2 instances will be launched
 
 In the Monitoring section, enable Container Insights to get detailed metrics for the cluster.
 
-Review the configuration and click Create cluster.
+
 <img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/46d81e40-0e97-4869-b9f2-26257d378d9a" />
+Review the configuration and click Create cluster.
+<img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/d27ec344-5796-4acd-819a-0a4a32a9ec21" />
 ### Create an ECS Task Definition
 After creating the cluster, the next step is to define how the container should run using a task definition.
 In the ECS console, go to Task Definitions.
 
-<img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/d27ec344-5796-4acd-819a-0a4a32a9ec21" />
+<img width="940" height="445" alt="image" src="https://github.com/user-attachments/assets/a84e3687-feae-4244-970c-5776dd4c3f97" />
 Click on Create new task definition.
 Provide a Task Definition name.
 Under Infrastructure requirements, select Amazon EC2 instances as the launch type.
@@ -337,12 +339,8 @@ Specify the Container port (for example: 80)
 
 In the Monitoring section, keep the recommended settings enabled.
 
-Review the configuration and click Create task definition.
-
-<img width="940" height="445" alt="image" src="https://github.com/user-attachments/assets/a84e3687-feae-4244-970c-5776dd4c3f97" />
-Review the configuration and click Create task definition.
 <img width="940" height="449" alt="image" src="https://github.com/user-attachments/assets/39ba75a7-da4b-43e7-8237-cd1b27267f0a" />
-
+Review the configuration and click Create task definition.
 <img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/fe67ad68-644b-46d4-a60b-7150e8057875" />
 <img width="940" height="446" alt="image" src="https://github.com/user-attachments/assets/9221e529-d3f9-498c-9891-baf72366e674" />
 <img width="940" height="448" alt="image" src="https://github.com/user-attachments/assets/31a4097f-a009-4cf8-a66d-81cef17bc8a2" />
